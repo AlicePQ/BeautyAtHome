@@ -3,6 +3,10 @@ package domain.booking.state;
 
 import domain.booking.Booking;
 
+/**
+ * Default booking state before confirmation. Only confirmation or cancellation
+ * transitions are allowed here.
+ */
 public class PendingState implements BookingState {
 
     @Override

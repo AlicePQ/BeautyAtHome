@@ -9,66 +9,97 @@ import domain.service.composite.ServiceIterator;
 import domain.service.image.ImageReference;
 import domain.service.visitor.ServiceVisitor;
 
-public class ServiceComposite implements ServiceComponent {
+        /**
+         * Composite node that groups multiple services and aggregates their price,
+         * duration, images, and execution.
+         */
+        public class ServiceComposite implements ServiceComponent {
 
-    private final String name;
-    private final String description;
-    private final List<ServiceComponent> children = new ArrayList<>();
+            private String name;
+            private String description;
+            private List<ServiceComponent> children = new ArrayList<>();
 
-    public ServiceComposite(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
+            /**
+             * @param name composite name
+             * @param description composite description
+             */
+            public ServiceComposite(String name, String description) {
+                this.name = name;
+                this.description = description;
+            }
 
-    public void add(ServiceComponent component) {
-        children.add(component);
-    }
+            /**
+             * Adds a child component.
+             *
+             * @param component component to add
+             */
+            public void add(ServiceComponent component) {
+                children.add(component);
+            }
 
-    public void remove(ServiceComponent component) {
-        children.remove(component);
-    }
+            /**
+             * Removes a child component.
+             *
+             * @param component component to remove
+             */
+            public void remove(ServiceComponent component) {
+                children.remove(component);
+            }
 
-    public ServiceIterator createIterator() {
-        return new CompositeServiceIterator(children);
-    }
+            /**
+             * Creates an iterator to traverse the composite children.
+             *
+             * @return iterator over child components
+             */
+            public ServiceIterator createIterator() {
+                return new CompositeServiceIterator(children);
+            }
 
-    @Override
-    public String getName() { return name; }
+            /** {@inheritDoc} */
+            @Override
+            public String getName() { return name; }
 
-    @Override
-    public String getDescription() { return description; }
+            /** {@inheritDoc} */
+            @Override
+            public String getDescription() { return description; }
 
-    @Override
-    public double getPrice() {
-        return children.stream().mapToDouble(ServiceComponent::getPrice).sum();
-    }
+            /** {@inheritDoc} */
+            @Override
+            public double getPrice() {
+                return children.stream().mapToDouble(ServiceComponent::getPrice).sum();
+            }
 
-    @Override
-    public int getDurationMin() {
-        return children.stream().mapToInt(ServiceComponent::getDurationMin).sum();
-    }
+            /** {@inheritDoc} */
+            @Override
+            public int getDurationMin() {
+                return children.stream().mapToInt(ServiceComponent::getDurationMin).sum();
+            }
 
-    @Override
-    public List<ImageReference> getImages() {
-        List<ImageReference> all = new ArrayList<>();
-        for (ServiceComponent child : children) {
-            all.addAll(child.getImages());
+            /** {@inheritDoc} */
+            @Override
+            public List<ImageReference> getImages() {
+                List<ImageReference> all = new ArrayList<>();
+                for (ServiceComponent child : children) {
+                    all.addAll(child.getImages());
+                }
+                return all;
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public void execute() {
+                for (ServiceComponent child : children) {
+                    child.execute();
+                }
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public void accept(ServiceVisitor visitor) {
+                visitor.visitServiceComposite(this);
+                for (ServiceComponent child : children) {
+                    child.accept(visitor);
+                }
+            }
         }
-        return all;
-    }
-
-    @Override
-    public void execute() {
-        for (ServiceComponent child : children) {
-            child.execute();
-        }
-    }
-
-    @Override
-    public void accept(ServiceVisitor visitor) {
-        visitor.visitServiceComposite(this);
-        for (ServiceComponent child : children) {
-            child.accept(visitor);
-        }
-    }
-}
+    

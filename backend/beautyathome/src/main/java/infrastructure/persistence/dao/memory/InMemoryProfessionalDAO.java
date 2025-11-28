@@ -9,10 +9,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import domain.professional.Professional;
 import infrastructure.persistence.dao.ProfessionalDAO;
 
+/**
+ * Implementación en memoria del DAO de profesionales.
+ */
 public class InMemoryProfessionalDAO implements ProfessionalDAO {
 
     private final Map<String, Professional> store = new ConcurrentHashMap<>();
 
+    /** {@inheritDoc} */
     @Override
     public Professional save(Professional entity) {
         if (entity == null) {
@@ -25,6 +29,7 @@ public class InMemoryProfessionalDAO implements ProfessionalDAO {
         return entity;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Professional findById(String id) {
         if (id == null) {
@@ -33,6 +38,7 @@ public class InMemoryProfessionalDAO implements ProfessionalDAO {
         return store.get(id);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void delete(String id) {
         if (id != null) {
@@ -40,6 +46,7 @@ public class InMemoryProfessionalDAO implements ProfessionalDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<Professional> findAll() {
         return Collections.unmodifiableList(new ArrayList<>(store.values()));

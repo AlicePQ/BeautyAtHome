@@ -1,39 +1,68 @@
 package domain.service.decorator;
 
-import domain.service.image.ImageReference;
-import domain.service.ServiceComponent;
-import domain.service.visitor.ServiceVisitor;
-
 import java.util.List;
 
+import domain.service.ServiceComponent;
+import domain.service.image.ImageReference;
+import domain.service.visitor.ServiceVisitor;
+
+/**
+ * Base decorator that wraps another {@link ServiceComponent} and delegates all
+ * operations to it. Subclasses override selective methods to modify behavior
+ * (price, name, duration, etc.).
+ */
 public abstract class ServiceDecorator implements ServiceComponent {
 
-    protected ServiceComponent component;
+	protected final ServiceComponent component;
 
-    protected ServiceDecorator(ServiceComponent component) {
-        this.component = component;
-    }
+	/**
+	 * Creates a decorator around the provided component.
+	 *
+	 * @param component component to wrap
+	 */
+	protected ServiceDecorator(ServiceComponent component) {
+		this.component = component;
+	}
 
-    @Override
-    public String getName() { return component.getName(); }
+	/** {@inheritDoc} */
+	@Override
+	public String getName() {
+		return component.getName();
+	}
 
-    @Override
-    public String getDescription() { return component.getDescription(); }
+	/** {@inheritDoc} */
+	@Override
+	public String getDescription() {
+		return component.getDescription();
+	}
 
-    @Override
-    public double getPrice() { return component.getPrice(); }
+	/** {@inheritDoc} */
+	@Override
+	public double getPrice() {
+		return component.getPrice();
+	}
 
-    @Override
-    public int getDurationMin() { return component.getDurationMin(); }
+	/** {@inheritDoc} */
+	@Override
+	public int getDurationMin() {
+		return component.getDurationMin();
+	}
 
-    @Override
-    public List<ImageReference> getImages() { return component.getImages(); }
+	/** {@inheritDoc} */
+	@Override
+	public List<ImageReference> getImages() {
+		return component.getImages();
+	}
 
-    @Override
-    public void execute() { component.execute(); }
+	/** {@inheritDoc} */
+	@Override
+	public void execute() {
+		component.execute();
+	}
 
-    @Override
-    public void accept(ServiceVisitor visitor) {
-        component.accept(visitor);
-    }
+	/** {@inheritDoc} */
+	@Override
+	public void accept(ServiceVisitor visitor) {
+		component.accept(visitor);
+	}
 }

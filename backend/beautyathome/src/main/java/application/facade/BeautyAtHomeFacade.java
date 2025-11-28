@@ -34,6 +34,10 @@ import infrastructure.persistence.dao.ServiceDAO;
 import infrastructure.proxy.CoverageProxy;
 import infrastructure.proxy.ReviewGuardProxy;
 
+/**
+ * Fachada que expone casos de uso de Beauty At Home hacia controladores o UI.
+ * Orquesta servicios de dominio, DAOs y proxies para mantener bajo acoplamiento.
+ */
 public class BeautyAtHomeFacade {
 
     private final ClientDAO clientDAO;
@@ -48,6 +52,21 @@ public class BeautyAtHomeFacade {
     private final ReviewGuardProxy reviewGuardProxy;
     private final ConsentProxy consentProxy;
 
+    /**
+     * Ensambla la fachada con todas sus dependencias colaboradoras.
+     *
+     * @param clientDAO DAO de clientes
+     * @param professionalDAO DAO de profesionales
+     * @param serviceDAO DAO de servicios
+     * @param bookingDAO DAO de reservas
+     * @param reviewDAO DAO de reseñas
+     * @param bookingService servicio de aplicación para reservas
+     * @param pricingStrategy estrategia de precios activa
+     * @param professionalFactory fábrica para crear profesionales
+     * @param serviceDirector director para construir servicios básicos
+     * @param reviewGuardProxy proxy que evita reseñas duplicadas
+     * @param consentProxy proxy encargado de fotos y consentimientos
+     */
     public BeautyAtHomeFacade(ClientDAO clientDAO,
                               ProfessionalDAO professionalDAO,
                               ServiceDAO serviceDAO,
@@ -72,6 +91,12 @@ public class BeautyAtHomeFacade {
         this.consentProxy = consentProxy;
     }
 
+    /**
+     * Registra un cliente a partir de datos dinámicos (p. ej. JSON de API).
+     *
+     * @param data mapa con id, nombre y correo
+     * @return cliente persistido
+     */
     public Client registerClient(Map<String, Object> data) {
         Client client = new Client(
                 (String) data.get("id"),
@@ -81,6 +106,12 @@ public class BeautyAtHomeFacade {
         return registerClient(client);
     }
 
+    /**
+     * Persiste un cliente asegurando que tenga identificador.
+     *
+     * @param client entidad a guardar
+     * @return cliente persistido con id válido
+     */
     public Client registerClient(Client client) {
         Objects.requireNonNull(client, "client");
         Client normalized = client.getId() == null || client.getId().isBlank()
@@ -89,6 +120,12 @@ public class BeautyAtHomeFacade {
         return clientDAO.save(normalized);
     }
 
+    /**
+     * Registra una profesional a partir de su payload y tipo declarado.
+     *
+     * @param data mapa con tipo, datos personales y servicios
+     * @return profesional almacenada
+     */
     public Professional registerProfessional(Map<String, Object> data) {
         String type = (String) data.get("type");
         Objects.requireNonNull(type, "type");
@@ -96,11 +133,24 @@ public class BeautyAtHomeFacade {
         return professionalDAO.save(professional);
     }
 
+    /**
+     * Persiste la profesional proporcionada sin transformaciones adicionales.
+     *
+     * @param professional instancia lista para guardarse
+     * @return profesional guardada
+     */
     public Professional registerProfessional(Professional professional) {
         Objects.requireNonNull(professional, "professional");
         return professionalDAO.save(professional);
     }
 
+    /**
+     * Busca profesionales filtrando por zona y categoría solicitadas.
+     *
+     * @param zone zona geográfica deseada
+     * @param category categoría de servicio
+     * @return lista filtrada de profesionales
+     */
     public List<Professional> searchProfessionals(String zone, String category) {
         return professionalDAO.findAll().stream()
                 .filter(pro -> matchesZone(pro, zone))
@@ -108,10 +158,27 @@ public class BeautyAtHomeFacade {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Lista los servicios publicados por una profesional específica.
+     *
+     * @param professionalId identificador de la profesional
+     * @return servicios registrados
+     */
     public List<ServiceComponent> listServices(String professionalId) {
         return new ArrayList<>(serviceDAO.findByProfessionalId(professionalId));
     }
 
+    /**
+     * Crea un servicio simple asociado a una profesional validada.
+     *
+     * @param professionalId id de la profesional propietaria
+     * @param name nombre del servicio
+     * @param description descripción comercial
+     * @param price precio base
+     * @param duration duración estimada en minutos
+     * @param imageUrls galería de soporte
+     * @return servicio persistido
+     */
     public ServiceComponent createBasicService(String professionalId,
                                                String name,
                                                String description,
@@ -125,6 +192,15 @@ public class BeautyAtHomeFacade {
         return serviceDAO.saveForProfessional(professionalId, service);
     }
 
+    /**
+     * Variante abreviada para reservar un servicio sin zona específica.
+     *
+     * @param clientId cliente que agenda
+     * @param professionalId profesional asignada
+     * @param serviceId servicio a ejecutar
+     * @param dateTime fecha y hora deseada
+     * @return reserva confirmada
+     */
     public Booking bookService(String clientId,
                                String professionalId,
                                String serviceId,
@@ -132,6 +208,16 @@ public class BeautyAtHomeFacade {
         return bookService(clientId, professionalId, serviceId, dateTime, null);
     }
 
+    /**
+     * Reserva un servicio tras validar existencia de entidades y cálculo de precio.
+     *
+     * @param clientId cliente que agenda
+     * @param professionalId profesional asignada
+     * @param serviceId servicio solicitado
+     * @param dateTime fecha/hora solicitada
+     * @param zone zona opcional para cobertura
+     * @return reserva persistida y notificada
+     */
     public Booking bookService(String clientId,
                                String professionalId,
                                String serviceId,
@@ -168,18 +254,44 @@ public class BeautyAtHomeFacade {
         return persisted;
     }
 
+    /**
+     * Crea una reseña aplicando la protección del proxy anti-duplicados.
+     *
+     * @param bookingId reserva evaluada
+     * @param rating calificación de 1-5
+     * @param text comentario opcional
+     * @return reseña persistida
+     */
     public Review addReview(String bookingId, int rating, String text) {
         return reviewGuardProxy.createReview(bookingId, rating, text);
     }
 
+    /**
+     * Registra una fotografía y la marca como pública únicamente con consentimiento.
+     *
+     * @param bookingId reserva asociada
+     * @param url ubicación de origen de la foto
+     * @param isPublic indicador de publicación solicitada
+     */
     public void uploadPhoto(String bookingId, String url, boolean isPublic) {
         consentProxy.addPhoto(bookingId, url, isPublic);
     }
 
+    /**
+     * Concede el consentimiento que habilita la publicación de fotos.
+     *
+     * @param bookingId reserva autorizada
+     */
     public void grantPhotoConsent(String bookingId) {
         consentProxy.addConsent(bookingId);
     }
 
+    /**
+     * Calcula el promedio de calificaciones de una profesional.
+     *
+     * @param professionalId profesional evaluada
+     * @return promedio numérico o 0.0 si no hay reseñas
+     */
     public double getProfessionalAverageRating(String professionalId) {
         return reviewDAO.findByProfessionalId(professionalId).stream()
                 .mapToInt(review -> review.getRating().getValue())
@@ -187,6 +299,12 @@ public class BeautyAtHomeFacade {
                 .orElse(0.0);
     }
 
+    /**
+     * Construye un historial de servicios con fotos aprobadas para la profesional.
+     *
+     * @param professionalId profesional consultada
+     * @return lista de historiales enriquecidos
+     */
     public List<ServiceHistory> viewProfessionalHistory(String professionalId) {
         List<Booking> bookings = bookingDAO.findByProfessionalId(professionalId);
         Professional professional = professionalDAO.findById(professionalId);
@@ -211,6 +329,9 @@ public class BeautyAtHomeFacade {
         return histories;
     }
 
+    /**
+     * Evalúa si la profesional ofrece la categoría solicitada.
+     */
     private boolean matchesCategory(Professional professional, String category) {
         if (category == null || category.isBlank()) {
             return true;
@@ -226,6 +347,9 @@ public class BeautyAtHomeFacade {
         });
     }
 
+    /**
+     * Determina si la profesional cubre la zona indicada a través del proxy.
+     */
     private boolean matchesZone(Professional professional, String zone) {
         if (zone == null || zone.isBlank()) {
             return true;

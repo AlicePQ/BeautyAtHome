@@ -1,5 +1,8 @@
 package domain.service.image;
 
+/**
+ * Lightweight value object holding a URL to a supportive image for a service.
+ */
 public class ImageReference {
 
     private String url;

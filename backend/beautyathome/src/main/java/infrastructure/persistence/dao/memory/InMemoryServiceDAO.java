@@ -11,16 +11,21 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import domain.service.ServiceComponent;
 import infrastructure.persistence.dao.ServiceDAO;
 
+/**
+ * Implementación en memoria del DAO de servicios con soporte por profesional.
+ */
 public class InMemoryServiceDAO implements ServiceDAO {
 
     private final Map<String, ServiceComponent> services = new ConcurrentHashMap<>();
     private final Map<String, List<ServiceComponent>> professionalServices = new ConcurrentHashMap<>();
 
+    /** {@inheritDoc} */
     @Override
     public ServiceComponent save(ServiceComponent entity) {
         return saveForProfessional(null, entity);
     }
 
+    /** {@inheritDoc} */
     @Override
     public ServiceComponent saveForProfessional(String professionalId, ServiceComponent serviceComponent) {
         if (serviceComponent == null) {
@@ -40,11 +45,13 @@ public class InMemoryServiceDAO implements ServiceDAO {
         return serviceComponent;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ServiceComponent findById(String id) {
         return services.get(normalize(id));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void delete(String id) {
         String key = normalize(id);
@@ -55,6 +62,7 @@ public class InMemoryServiceDAO implements ServiceDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<ServiceComponent> findByProfessionalId(String professionalId) {
         List<ServiceComponent> servicesForProfessional = professionalServices.get(professionalId);
@@ -64,6 +72,9 @@ public class InMemoryServiceDAO implements ServiceDAO {
         return Collections.unmodifiableList(new ArrayList<>(servicesForProfessional));
     }
 
+    /**
+     * Normaliza las claves para mantener consistencia en los mapas.
+     */
     private String normalize(String id) {
         return id == null ? "" : id.toLowerCase(Locale.ROOT);
     }

@@ -9,10 +9,14 @@ import java.util.stream.Collectors;
 import domain.review.Review;
 import infrastructure.persistence.dao.ReviewDAO;
 
+/**
+ * DAO de reseñas basado en estructuras concurrentes en memoria.
+ */
 public class InMemoryReviewDAO implements ReviewDAO {
 
     private final Map<String, Review> store = new ConcurrentHashMap<>();
 
+    /** {@inheritDoc} */
     @Override
     public Review save(Review entity) {
         if (entity == null) {
@@ -22,6 +26,7 @@ public class InMemoryReviewDAO implements ReviewDAO {
         return entity;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Review findById(String id) {
         if (id == null) {
@@ -30,6 +35,7 @@ public class InMemoryReviewDAO implements ReviewDAO {
         return store.get(id);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void delete(String id) {
         if (id != null) {
@@ -37,6 +43,7 @@ public class InMemoryReviewDAO implements ReviewDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<Review> findByProfessionalId(String professionalId) {
         if (professionalId == null) {

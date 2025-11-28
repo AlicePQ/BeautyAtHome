@@ -7,6 +7,9 @@ import java.util.List;
 import domain.service.ServiceComposite;
 import domain.service.ServiceLeaf;
 
+/**
+ * Visitor that collects textual descriptions of each service visited.
+ */
 public class DescriptionVisitor implements ServiceVisitor {
 
 	private final List<String> descriptions = new ArrayList<>();

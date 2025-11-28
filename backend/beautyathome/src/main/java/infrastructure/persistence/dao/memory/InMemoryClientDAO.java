@@ -7,10 +7,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import domain.client.Client;
 import infrastructure.persistence.dao.ClientDAO;
 
+/**
+ * DAO en memoria para clientes, útil en pruebas unitarias.
+ */
 public class InMemoryClientDAO implements ClientDAO {
 
     private final Map<String, Client> store = new ConcurrentHashMap<>();
 
+    /** {@inheritDoc} */
     @Override
     public Client save(Client entity) {
         if (entity == null) {
@@ -23,6 +27,7 @@ public class InMemoryClientDAO implements ClientDAO {
         return normalized;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Client findById(String id) {
         if (id == null) {
@@ -31,6 +36,7 @@ public class InMemoryClientDAO implements ClientDAO {
         return store.get(id);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void delete(String id) {
         if (id != null) {

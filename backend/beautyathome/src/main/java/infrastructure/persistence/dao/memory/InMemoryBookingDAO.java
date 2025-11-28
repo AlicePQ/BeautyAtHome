@@ -11,10 +11,14 @@ import domain.booking.Booking;
 import domain.booking.BookingBuilder;
 import infrastructure.persistence.dao.BookingDAO;
 
+/**
+ * Implementación en memoria de {@link BookingDAO} para pruebas y demos.
+ */
 public class InMemoryBookingDAO implements BookingDAO {
 
     private final Map<String, Booking> store = new ConcurrentHashMap<>();
 
+    /** {@inheritDoc} */
     @Override
     public Booking save(Booking entity) {
         if (entity == null) {
@@ -32,6 +36,7 @@ public class InMemoryBookingDAO implements BookingDAO {
         return ensured;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Booking findById(String id) {
         if (id == null) {
@@ -40,6 +45,7 @@ public class InMemoryBookingDAO implements BookingDAO {
         return store.get(id);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void delete(String id) {
         if (id != null) {
@@ -47,6 +53,7 @@ public class InMemoryBookingDAO implements BookingDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<Booking> findByProfessionalId(String professionalId) {
         if (professionalId == null) {

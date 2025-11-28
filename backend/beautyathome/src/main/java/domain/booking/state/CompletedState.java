@@ -2,6 +2,9 @@ package domain.booking.state;
 
 import domain.booking.Booking;
 
+/**
+ * Terminal state that indicates the service has been fully delivered.
+ */
 public class CompletedState implements BookingState {
 
 	@Override

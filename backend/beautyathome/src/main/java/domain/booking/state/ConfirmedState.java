@@ -2,6 +2,10 @@ package domain.booking.state;
 
 import domain.booking.Booking;
 
+/**
+ * State representing a confirmed appointment that can either start, be
+ * cancelled, or marked as completed.
+ */
 public class ConfirmedState implements BookingState {
 
 	@Override

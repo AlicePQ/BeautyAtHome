@@ -6,10 +6,16 @@ import domain.professional.Professional;
 import infrastructure.persistence.dao.ProfessionalDAO;
 import infrastructure.proxy.CoverageProxy;
 
+/**
+ * Ensures the selected professional provides coverage in the requested zone.
+ */
 public class CoverageValidationHandler extends BookingRequestHandler {
 
     private final ProfessionalDAO professionalDAO;
 
+    /**
+     * @param professionalDAO DAO used to load professional coverage metadata
+     */
     public CoverageValidationHandler(ProfessionalDAO professionalDAO) {
         this.professionalDAO = professionalDAO;
     }

@@ -2,6 +2,9 @@ package domain.booking.state;
 
 import domain.booking.Booking;
 
+/**
+ * Terminal state indicating the appointment has been cancelled.
+ */
 public class CancelledState implements BookingState {
 
 	@Override

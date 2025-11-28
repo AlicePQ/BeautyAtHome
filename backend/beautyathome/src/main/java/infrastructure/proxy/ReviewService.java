@@ -13,6 +13,9 @@ import infrastructure.persistence.dao.ClientDAO;
 import infrastructure.persistence.dao.ProfessionalDAO;
 import infrastructure.persistence.dao.ReviewDAO;
 
+/**
+ * Servicio que compone reseñas a partir de daos y mantiene un cache ligero.
+ */
 public class ReviewService {
 
 	private final BookingDAO bookingDAO;
@@ -21,6 +24,12 @@ public class ReviewService {
 	private final ReviewDAO reviewDAO;
 	private final List<Review> cache = new CopyOnWriteArrayList<>();
 
+	/**
+	 * @param bookingDAO DAO de reservas
+	 * @param clientDAO DAO de clientes
+	 * @param professionalDAO DAO de profesionales
+	 * @param reviewDAO DAO de reseñas
+	 */
 	public ReviewService(BookingDAO bookingDAO,
 						 ClientDAO clientDAO,
 						 ProfessionalDAO professionalDAO,
@@ -31,6 +40,14 @@ public class ReviewService {
 		this.reviewDAO = reviewDAO;
 	}
 
+	/**
+	 * Construye y persiste una reseña para la reserva proporcionada.
+	 *
+	 * @param bookingId id de la reserva
+	 * @param rating calificación deseada
+	 * @param text comentario opcional
+	 * @return reseña almacenada
+	 */
 	public Review createReview(String bookingId, int rating, String text) {
 		Booking booking = bookingDAO.findById(bookingId);
 		if (booking == null) {
@@ -55,6 +72,12 @@ public class ReviewService {
 		return persisted;
 	}
 
+	/**
+	 * Calcula el promedio reutilizando reseñas en cache cuando el DAO está vacío.
+	 *
+	 * @param professionalId profesional evaluada
+	 * @return promedio calculado
+	 */
 	public double getAverageForProfessional(String professionalId) {
 		List<Review> reviews = reviewDAO.findByProfessionalId(professionalId);
 		if (reviews.isEmpty()) {
