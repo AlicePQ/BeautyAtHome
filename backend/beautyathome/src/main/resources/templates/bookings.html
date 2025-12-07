@@ -1,60 +1,86 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Reservas</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BeautyAtHome · Reservas</title>
     <link rel="stylesheet" th:href="@{/css/app.css}" href="/css/app.css" />
 </head>
-<body>
-<header>
-    <h1>Reservas</h1>
-    <nav>
-        <a th:href="@{/home}">Inicio</a>
-        <a th:href="@{/clients}">Clientes</a>
-        <a th:href="@{/professionals}">Profesionales</a>
-        <a th:href="@{/reviews}">Reseñas</a>
-    </nav>
-</header>
-<main>
-    <section>
-        <h2>Nueva reserva</h2>
-        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
-        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
-        <form th:action="@{/bookings}" th:object="${bookingForm}" method="post">
-            <input type="text" th:field="*{clientId}" placeholder="ID cliente" required />
-            <input type="text" th:field="*{professionalId}" placeholder="ID profesional" required />
-            <input type="text" th:field="*{serviceId}" placeholder="ID servicio" required />
-            <input type="text" th:field="*{zone}" placeholder="Zona (opcional)" />
-            <input type="text" th:field="*{dateTime}" placeholder="Fecha (ISO: 2025-12-07T10:00)" required />
-            <button type="submit">Reservar</button>
-        </form>
-    </section>
+<body class="app-body">
+<div class="shell">
+    <header class="top-nav">
+        <div class="brand">
+            <span class="brand__glyph">BAH</span>
+            <div>
+                <p class="brand__title">BeautyAtHome</p>
+                <small class="brand__tagline">Agenda viva</small>
+            </div>
+        </div>
+        <nav class="nav-links">
+            <a th:href="@{/home}">Inicio</a>
+            <a th:href="@{/clients}">Clientes</a>
+            <a th:href="@{/professionals}">Profesionales</a>
+            <a th:href="@{/bookings}" class="is-active">Reservas</a>
+            <a th:href="@{/reviews}">Reseñas</a>
+        </nav>
+    </header>
 
-    <section>
-        <h2>Historial</h2>
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Cliente</th>
-                <th>Profesional</th>
-                <th>Servicio</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="booking : ${bookings}">
-                <td th:text="${booking.id}">ID</td>
-                <td th:text="${booking.clientId}">Cliente</td>
-                <td th:text="${booking.professionalId}">Profesional</td>
-                <td th:text="${booking.serviceId}">Servicio</td>
-                <td th:text="${booking.dateTime}">Fecha</td>
-                <td th:text="${booking.state.class.simpleName}">Estado</td>
-            </tr>
-            </tbody>
-        </table>
-    </section>
-</main>
+    <main class="content">
+        <section class="hero hero--sub">
+            <div>
+                <p class="eyebrow">Orquestación</p>
+                <h1>Coordina clientes, profesionales y servicios en segundos</h1>
+                <p>Ingresa IDs existentes para disparar el flujo Command + Observer de la agenda.</p>
+            </div>
+            <div class="hero__badge">
+                <p class="hero__kpi" th:text="${#lists.size(bookings)}">0</p>
+                <p class="hero__label">Reservas creadas</p>
+                <span>Estado en vivo</span>
+            </div>
+        </section>
+
+        <section class="glass-panel">
+            <div class="section-header">
+                <h2>Nueva reserva</h2>
+                <p>Usa formato ISO para la fecha (ej. 2025-12-07T10:00).</p>
+            </div>
+            <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+            <form th:action="@{/bookings}" th:object="${bookingForm}" method="post" class="form-grid two">
+                <label>Cliente<input type="text" th:field="*{clientId}" placeholder="cli-001" required /></label>
+                <label>Profesional<input type="text" th:field="*{professionalId}" placeholder="pro-001" required /></label>
+                <label>Servicio<input type="text" th:field="*{serviceId}" placeholder="Corte deluxe" required /></label>
+                <label>Zona<input type="text" th:field="*{zone}" placeholder="Chapinero" /></label>
+                <label class="grid-span">Fecha y hora<input type="text" th:field="*{dateTime}" placeholder="2025-12-07T10:00" required /></label>
+                <button type="submit" class="btn primary">Reservar</button>
+            </form>
+        </section>
+
+        <section class="glass-panel">
+            <div class="section-header">
+                <h2>Línea de tiempo</h2>
+                <span th:text="${#lists.size(bookings)} + ' eventos'">0 eventos</span>
+            </div>
+            <ul class="timeline timeline--solid">
+                <li class="timeline__item" th:each="booking : ${bookings}">
+                    <span class="timeline__time" th:text="${#temporals.format(booking.dateTime, 'dd MMM HH:mm')}">07 Dic 10:00</span>
+                    <div>
+                        <p class="timeline__title" th:text="${booking.serviceId}">Servicio</p>
+                        <p class="timeline__meta">
+                            <span th:text="${booking.clientId}">Cliente</span>
+                            ·
+                            <span th:text="${booking.professionalId}">Profesional</span>
+                        </p>
+                        <small th:text="${booking.id}">booking-id</small>
+                    </div>
+                    <span class="chip ghost" th:text="${booking.state.class.simpleName}">Estado</span>
+                </li>
+                <li class="timeline__item empty" th:if="${#lists.isEmpty(bookings)}">
+                    Crea tu primera reserva para ver la magia de la agenda.
+                </li>
+            </ul>
+        </section>
+    </main>
+</div>
 </body>
 </html>

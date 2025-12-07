@@ -1,5 +1,9 @@
 package ui.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import application.facade.BeautyAtHomeFacade;
+import domain.review.Review;
 import infrastructure.persistence.dao.ReviewDAO;
 import ui.viewmodel.ReviewForm;
 
@@ -29,7 +34,14 @@ public class ReviewViewController {
 
     @GetMapping
     public String listReviews(Model model) {
-        model.addAttribute("reviews", reviewDAO.findAll());
+        List<Review> reviews = StreamSupport.stream(reviewDAO.findAll().spliterator(), false)
+            .collect(Collectors.toList());
+        double averageRating = reviews.stream()
+            .mapToInt(review -> review.getRating().getValue())
+            .average()
+            .orElse(0.0);
+        model.addAttribute("reviews", reviews);
+        model.addAttribute("averageRating", averageRating);
         model.addAttribute("reviewForm", new ReviewForm());
         return "reviews";
     }

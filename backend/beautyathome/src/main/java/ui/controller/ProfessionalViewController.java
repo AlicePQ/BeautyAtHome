@@ -2,7 +2,10 @@ package ui.controller;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,10 +40,24 @@ public class ProfessionalViewController {
     public String listProfessionals(@RequestParam(required = false) String zone,
                                     @RequestParam(required = false) String category,
                                     Model model) {
-        Iterable<Professional> professionals = (zone == null && category == null)
+        Iterable<Professional> data = (zone == null && category == null)
                 ? professionalDAO.findAll()
                 : facade.searchProfessionals(zone, category);
+        List<Professional> professionals = StreamSupport
+                .stream(data.spliterator(), false)
+                .collect(Collectors.toList());
+        Map<String, Double> ratingByProfessional = professionals.stream()
+                .collect(Collectors.toMap(Professional::getId,
+                        pro -> facade.getProfessionalAverageRating(pro.getId())));
+        double networkAverageRating = ratingByProfessional.values().stream()
+            .mapToDouble(Double::doubleValue)
+            .average()
+            .orElse(0.0);
         model.addAttribute("professionals", professionals);
+        model.addAttribute("ratingByProfessional", ratingByProfessional);
+        model.addAttribute("networkAverageRating", networkAverageRating);
+        model.addAttribute("selectedZone", zone);
+        model.addAttribute("selectedCategory", category);
         model.addAttribute("professionalForm", new ProfessionalForm());
         return "professionals";
     }

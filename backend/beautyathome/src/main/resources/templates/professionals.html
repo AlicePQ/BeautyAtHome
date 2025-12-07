@@ -1,64 +1,122 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Profesionales</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BeautyAtHome · Profesionales</title>
     <link rel="stylesheet" th:href="@{/css/app.css}" href="/css/app.css" />
 </head>
-<body>
-<header>
-    <h1>Profesionales</h1>
-    <nav>
-        <a th:href="@{/home}">Inicio</a>
-        <a th:href="@{/clients}">Clientes</a>
-        <a th:href="@{/bookings}">Reservas</a>
-        <a th:href="@{/reviews}">Reseñas</a>
-    </nav>
-</header>
-<main>
-    <section>
-        <h2>Registrar profesional</h2>
-        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
-        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
-        <form th:action="@{/professionals}" th:object="${professionalForm}" method="post">
-            <input type="text" th:field="*{id}" placeholder="ID" required />
-            <input type="text" th:field="*{type}" placeholder="Tipo (hairstylist, makeupartist, ...)" required />
-            <input type="text" th:field="*{name}" placeholder="Nombre" required />
-            <input type="url" th:field="*{photoUrl}" placeholder="URL de foto" />
-            <textarea th:field="*{experienceSummary}" placeholder="Resumen de experiencia"></textarea>
-            <input type="text" th:field="*{coverageAreas}" placeholder="Coberturas (coma separadas)" />
-            <input type="text" th:field="*{brandName}" placeholder="Marca" />
-            <input type="text" th:field="*{brandLogo}" placeholder="Logo" />
-            <button type="submit">Guardar</button>
-        </form>
-    </section>
+<body class="app-body">
+<div class="shell">
+    <header class="top-nav">
+        <div class="brand">
+            <span class="brand__glyph">BAH</span>
+            <div>
+                <p class="brand__title">BeautyAtHome</p>
+                <small class="brand__tagline">Talento en ruta</small>
+            </div>
+        </div>
+        <nav class="nav-links">
+            <a th:href="@{/home}">Inicio</a>
+            <a th:href="@{/clients}">Clientes</a>
+            <a th:href="@{/professionals}" class="is-active">Profesionales</a>
+            <a th:href="@{/bookings}">Reservas</a>
+            <a th:href="@{/reviews}">Reseñas</a>
+        </nav>
+    </header>
 
-    <section>
-        <h2>Listado</h2>
-        <table>
-            <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Tipo</th>
-                <th>Marca</th>
-                <th>Zonas</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="pro : ${professionals}">
-                <td th:text="${pro.name}">Nombre</td>
-                <td th:text="${pro.class.simpleName}">Tipo</td>
-                <td th:text="${pro.brand != null ? pro.brand.name : 'N/A'}">Marca</td>
-                <td>
-                    <span th:if="${#lists.isEmpty(pro.coverageAreas)}">N/A</span>
-                    <span th:each="area, iterStat : ${pro.coverageAreas}">
-                        <span th:text="${area.name}">Zona</span><span th:if="${!iterStat.last}">, </span>
-                    </span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </section>
-</main>
+    <main class="content">
+        <section class="hero hero--sub">
+            <div>
+                <p class="eyebrow">Red de especialistas</p>
+                <h1>Curamos estilistas con cobertura urbana y calificaciones reales</h1>
+                <p>Filtra por zona o categoría para asignar el talento perfecto a cada beauty moment.</p>
+            </div>
+            <div class="hero__badge">
+                <p class="hero__kpi" th:text="${#lists.size(professionals)}">0</p>
+                <p class="hero__label">Profesionales listos</p>
+                <span>Promedio <strong th:text="${#numbers.formatDecimal(networkAverageRating, 1, 1)}">0.0</strong> ★</span>
+            </div>
+        </section>
+
+        <section class="glass-panel">
+            <div class="section-header">
+                <h2>Filtrar cobertura</h2>
+                <p>Optimiza la asignación según zona o categoría.</p>
+            </div>
+            <form method="get" th:action="@{/professionals}" class="form-grid two">
+                <label>
+                    Zona
+                    <input type="text" name="zone" th:value="${selectedZone}" placeholder="Chapinero" />
+                </label>
+                <label>
+                    Categoría
+                    <input type="text" name="category" th:value="${selectedCategory}" placeholder="makeupartist" />
+                </label>
+                <div class="form-actions">
+                    <button type="submit" class="btn primary">Aplicar</button>
+                    <a th:href="@{/professionals}" class="btn ghost">Limpiar</a>
+                </div>
+            </form>
+        </section>
+
+        <section class="glass-panel">
+            <div class="section-header">
+                <h2>Registrar profesional</h2>
+                <p>Comparte marca, experiencia y coberturas.</p>
+            </div>
+            <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+            <form th:action="@{/professionals}" th:object="${professionalForm}" method="post" class="form-grid two">
+                <label>ID<input type="text" th:field="*{id}" required placeholder="pro-001" /></label>
+                <label>Tipo<input type="text" th:field="*{type}" required placeholder="makeupartist" /></label>
+                <label>Nombre<input type="text" th:field="*{name}" required placeholder="Nombre completo" /></label>
+                <label>Foto<input type="url" th:field="*{photoUrl}" placeholder="https://" /></label>
+                <label class="grid-span">Resumen<textarea th:field="*{experienceSummary}" placeholder="Más de 5 años en..." rows="3"></textarea></label>
+                <label>Coberturas<input type="text" th:field="*{coverageAreas}" placeholder="Chapinero, Usaquén" /></label>
+                <label>Marca<input type="text" th:field="*{brandName}" placeholder="Nombre marca" /></label>
+                <label>Logo<input type="text" th:field="*{brandLogo}" placeholder="https://" /></label>
+                <button type="submit" class="btn primary">Guardar profesional</button>
+            </form>
+        </section>
+
+        <section class="glass-panel">
+            <div class="section-header">
+                <h2>Talento confirmado</h2>
+                <span th:text="${#lists.size(professionals)} + ' perfiles'">0 perfiles</span>
+            </div>
+            <div class="card-grid two">
+                <article class="card pro-card" th:each="pro : ${professionals}">
+                    <div class="pro-card__media" th:if="${pro.photoUrl != null}">
+                        <img th:src="${pro.photoUrl}" alt="Foto profesional" />
+                    </div>
+                    <div class="pro-card__body">
+                        <div class="pro-card__head">
+                            <span class="chip" th:text="${pro.brand != null ? pro.brand.name : 'Independiente'}">Marca</span>
+                            <span class="badge" th:text="${pro.class.simpleName}">Tipo</span>
+                        </div>
+                        <h3 th:text="${pro.name}">Nombre</h3>
+                        <p class="muted" th:text="${pro.experienceSummary}">Resumen</p>
+                        <div class="pro-card__meta">
+                            <div>
+                                <small>Servicios</small>
+                                <strong th:text="${pro.servicesOffered != null ? pro.servicesOffered.size() : 0}">0</strong>
+                            </div>
+                            <div>
+                                <small>Rating</small>
+                                <strong th:text="${ratingByProfessional[pro.id] != null ? #numbers.formatDecimal(ratingByProfessional[pro.id], 1, 1) : '0.0'}">0.0</strong>
+                            </div>
+                        </div>
+                        <div class="badges">
+                            <span class="badge" th:each="area : ${pro.coverageAreas}" th:text="${area.name}">Zona</span>
+                            <span class="badge" th:if="${#lists.isEmpty(pro.coverageAreas)}">Sin cobertura declarada</span>
+                        </div>
+                    </div>
+                </article>
+                <p class="empty" th:if="${#lists.isEmpty(professionals)}">Crea tu primera profesional para mostrarla aquí.</p>
+            </div>
+        </section>
+    </main>
+</div>
 </body>
 </html>

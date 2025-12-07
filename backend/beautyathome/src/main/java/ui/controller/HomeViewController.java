@@ -1,12 +1,22 @@
 package ui.controller;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import domain.booking.Booking;
+import domain.client.Client;
+import domain.professional.Professional;
+import domain.review.Review;
 import infrastructure.persistence.dao.BookingDAO;
 import infrastructure.persistence.dao.ClientDAO;
 import infrastructure.persistence.dao.ProfessionalDAO;
+import infrastructure.persistence.dao.ReviewDAO;
 
 /**
  * Simple MVC controller that renders the landing page with quick stats and links.
@@ -17,20 +27,48 @@ public class HomeViewController {
     private final ClientDAO clientDAO;
     private final ProfessionalDAO professionalDAO;
     private final BookingDAO bookingDAO;
+    private final ReviewDAO reviewDAO;
 
     public HomeViewController(ClientDAO clientDAO,
                               ProfessionalDAO professionalDAO,
-                              BookingDAO bookingDAO) {
+                              BookingDAO bookingDAO,
+                              ReviewDAO reviewDAO) {
         this.clientDAO = clientDAO;
         this.professionalDAO = professionalDAO;
         this.bookingDAO = bookingDAO;
+        this.reviewDAO = reviewDAO;
     }
 
     @GetMapping({"/", "/home"})
     public String home(Model model) {
-        model.addAttribute("clientCount", clientDAO.findAll().size());
-        model.addAttribute("professionalCount", professionalDAO.findAll().size());
-        model.addAttribute("bookingCount", bookingDAO.findAll().size());
+        List<Client> clients = snapshot(clientDAO.findAll());
+        List<Professional> professionals = snapshot(professionalDAO.findAll());
+        List<Booking> bookings = snapshot(bookingDAO.findAll());
+        List<Review> reviews = snapshot(reviewDAO.findAll());
+
+        model.addAttribute("clientCount", clients.size());
+        model.addAttribute("professionalCount", professionals.size());
+        model.addAttribute("bookingCount", bookings.size());
+        model.addAttribute("reviewCount", reviews.size());
+        model.addAttribute("averageRating", reviews.stream()
+                .mapToInt(review -> review.getRating().getValue())
+                .average()
+                .orElse(0.0));
+        model.addAttribute("featuredClients", clients.stream().limit(3).collect(Collectors.toList()));
+        model.addAttribute("heroProfessionals", professionals.stream().limit(3).collect(Collectors.toList()));
+        model.addAttribute("upcomingBookings", bookings.stream()
+                .sorted(Comparator.comparing(Booking::getDateTime))
+                .limit(5)
+                .collect(Collectors.toList()));
+        model.addAttribute("latestReviews", reviews.stream()
+                .sorted(Comparator.comparing(Review::getCreatedAt).reversed())
+                .limit(3)
+                .collect(Collectors.toList()));
         return "index";
+    }
+
+    private <T> List<T> snapshot(Iterable<T> source) {
+        return StreamSupport.stream(source.spliterator(), false)
+                .collect(Collectors.toList());
     }
 }
