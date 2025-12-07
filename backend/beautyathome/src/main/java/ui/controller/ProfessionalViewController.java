@@ -19,7 +19,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import application.facade.BeautyAtHomeFacade;
 import domain.professional.Professional;
 import infrastructure.persistence.dao.ProfessionalDAO;
+import infrastructure.persistence.dao.ReviewDAO;
 import ui.viewmodel.ProfessionalForm;
+import ui.viewmodel.ProfessionalShowcase;
 
 /**
  * MVC controller that lists and registers professionals.
@@ -30,10 +32,14 @@ public class ProfessionalViewController {
 
     private final BeautyAtHomeFacade facade;
     private final ProfessionalDAO professionalDAO;
+    private final ReviewDAO reviewDAO;
 
-    public ProfessionalViewController(BeautyAtHomeFacade facade, ProfessionalDAO professionalDAO) {
+    public ProfessionalViewController(BeautyAtHomeFacade facade,
+                                      ProfessionalDAO professionalDAO,
+                                      ReviewDAO reviewDAO) {
         this.facade = facade;
         this.professionalDAO = professionalDAO;
+        this.reviewDAO = reviewDAO;
     }
 
     @GetMapping
@@ -53,9 +59,21 @@ public class ProfessionalViewController {
             .mapToDouble(Double::doubleValue)
             .average()
             .orElse(0.0);
+        List<ProfessionalShowcase> showcases = professionals.stream()
+            .map(professional -> new ProfessionalShowcase(
+                professional,
+                facade.listServices(professional.getId()),
+                facade.viewProfessionalHistory(professional.getId()),
+                reviewDAO.findByProfessionalId(professional.getId()),
+                ratingByProfessional.getOrDefault(professional.getId(), 0.0)))
+            .collect(Collectors.toList());
         model.addAttribute("professionals", professionals);
         model.addAttribute("ratingByProfessional", ratingByProfessional);
         model.addAttribute("networkAverageRating", networkAverageRating);
+        model.addAttribute("showcases", showcases);
+        model.addAttribute("sponsoredShowcases", showcases.stream()
+            .filter(showcase -> showcase.getProfessional().getBrand() != null)
+            .collect(Collectors.toList()));
         model.addAttribute("selectedZone", zone);
         model.addAttribute("selectedCategory", category);
         model.addAttribute("professionalForm", new ProfessionalForm());

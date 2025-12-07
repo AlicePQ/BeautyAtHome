@@ -23,4 +23,11 @@ public interface ServiceDAO extends BaseDAO<ServiceComponent, String> {
 	default ServiceComponent saveForProfessional(String professionalId, ServiceComponent serviceComponent) {
 		return save(serviceComponent);
 	}
+
+	/**
+	 * Lista todos los servicios publicados sin importar la profesional.
+	 */
+	default List<ServiceComponent> findAll() {
+		return Collections.emptyList();
+	}
 }

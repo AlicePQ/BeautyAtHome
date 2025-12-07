@@ -207,6 +207,12 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
+.spotlight-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
 .card,
 .glass-panel {
     background: var(--surface);
@@ -258,6 +264,11 @@ body {
     gap: 1rem;
 }
 
+.pro-card--xl {
+    min-height: 100%;
+    padding: 1.75rem;
+}
+
 .pro-card__media img {
     width: 100%;
     border-radius: 16px;
@@ -299,9 +310,25 @@ body {
     border: 1px solid var(--glass-border);
 }
 
+.badge.ghost {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--muted);
+}
+
 .chip.ghost {
     background: rgba(255, 255, 255, 0.08);
     color: var(--muted);
+}
+
+.stack {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.stack--chips .chip {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .persona-grid {
@@ -398,6 +425,15 @@ textarea {
     gap: 1rem;
 }
 
+.timeline__row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--glass-border);
+}
+
 .timeline__item {
     display: flex;
     align-items: center;
@@ -452,6 +488,75 @@ textarea {
     flex-wrap: wrap;
     gap: 0.5rem;
     color: var(--muted);
+}
+
+.spotlight-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 1.5rem;
+    border-radius: 20px;
+    background: linear-gradient(145deg, rgba(255, 77, 141, 0.15), rgba(108, 99, 255, 0.15));
+    border: 1px solid var(--glass-border);
+    min-height: 230px;
+}
+
+.spotlight-card__brand {
+    display: flex;
+    gap: 0.85rem;
+    align-items: center;
+}
+
+.spotlight-card__brand img {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.spotlight-card__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.spotlight-card__stats strong {
+    display: block;
+    font-size: 1.25rem;
+    color: var(--text);
+}
+
+.quote-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+}
+
+.quote {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.quote blockquote {
+    margin: 0;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+.quote figcaption {
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 0.85rem;
 }
 
 .stars {

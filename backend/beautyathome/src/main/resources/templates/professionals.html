@@ -80,40 +80,102 @@
             </form>
         </section>
 
+        <section class="glass-panel" th:if="${!#lists.isEmpty(sponsoredShowcases)}">
+            <div class="section-header">
+                <div>
+                    <h2>Embajadores de marca</h2>
+                    <p>Aliadas con acuerdos estratégicos y experiencias insignia.</p>
+                </div>
+                <span th:text="${#lists.size(sponsoredShowcases)} + ' alianzas activas'">0 alianzas activas</span>
+            </div>
+            <div class="spotlight-row">
+                <article class="spotlight-card" th:each="spotlight : ${sponsoredShowcases}">
+                    <div class="spotlight-card__brand">
+                        <img th:if="${spotlight.professional.brand != null and spotlight.professional.brand.logoUrl != null}"
+                             th:src="${spotlight.professional.brand.logoUrl}" alt="Logo" />
+                        <div>
+                            <p class="eyebrow" th:text="${spotlight.professional.brand != null ? spotlight.professional.brand.name : 'Marca boutique'}">Marca</p>
+                            <h3 th:text="${spotlight.professional.name}">Nombre</h3>
+                        </div>
+                    </div>
+                    <p class="muted" th:text="${spotlight.professional.experienceSummary}">Resumen</p>
+                    <div class="spotlight-card__stats">
+                        <span><small>Rating</small><strong th:text="${#numbers.formatDecimal(spotlight.averageRating, 1, 1)}">0.0</strong></span>
+                        <span><small>Cobertura</small><strong th:text="${(spotlight.professional.coverageAreas != null ? spotlight.professional.coverageAreas.size() : 0)} + ' zonas'">0 zonas</strong></span>
+                        <span><small>Servicios</small><strong th:text="${spotlight.services.size()}">0</strong></span>
+                    </div>
+                    <div class="stack stack--chips">
+                        <span class="chip" th:each="service, iterStat : ${spotlight.services}" th:if="${iterStat.index < 3}" th:text="${service.name}">Servicio</span>
+                        <span class="chip" th:if="${#lists.isEmpty(spotlight.services)}">Publicación en curso</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+
         <section class="glass-panel">
             <div class="section-header">
-                <h2>Talento confirmado</h2>
-                <span th:text="${#lists.size(professionals)} + ' perfiles'">0 perfiles</span>
+                <h2>Studio Capsules</h2>
+                <p>Portafolio completo: cobertura, historia y reputación en un vistazo.</p>
             </div>
             <div class="card-grid two">
-                <article class="card pro-card" th:each="pro : ${professionals}">
-                    <div class="pro-card__media" th:if="${pro.photoUrl != null}">
-                        <img th:src="${pro.photoUrl}" alt="Foto profesional" />
+                <article class="card pro-card pro-card--xl" th:each="showcase : ${showcases}">
+                    <div class="pro-card__media" th:if="${showcase.professional.photoUrl != null}">
+                        <img th:src="${showcase.professional.photoUrl}" alt="Foto profesional" />
                     </div>
                     <div class="pro-card__body">
                         <div class="pro-card__head">
-                            <span class="chip" th:text="${pro.brand != null ? pro.brand.name : 'Independiente'}">Marca</span>
-                            <span class="badge" th:text="${pro.class.simpleName}">Tipo</span>
+                            <span class="chip" th:text="${showcase.professional.brand != null ? showcase.professional.brand.name : 'Independiente'}">Marca</span>
+                            <span class="badge" th:text="${showcase.professional.class.simpleName}">Tipo</span>
+                            <small class="badge ghost" th:text="${#numbers.formatDecimal(showcase.averageRating, 1, 1)} + ' ★'">0.0 ★</small>
                         </div>
-                        <h3 th:text="${pro.name}">Nombre</h3>
-                        <p class="muted" th:text="${pro.experienceSummary}">Resumen</p>
+                        <h3 th:text="${showcase.professional.name}">Nombre</h3>
+                        <p class="muted" th:text="${showcase.professional.experienceSummary}">Resumen</p>
                         <div class="pro-card__meta">
                             <div>
                                 <small>Servicios</small>
-                                <strong th:text="${pro.servicesOffered != null ? pro.servicesOffered.size() : 0}">0</strong>
+                                <strong th:text="${showcase.services.size()}">0</strong>
                             </div>
                             <div>
-                                <small>Rating</small>
-                                <strong th:text="${ratingByProfessional[pro.id] != null ? #numbers.formatDecimal(ratingByProfessional[pro.id], 1, 1) : '0.0'}">0.0</strong>
+                                <small>Historial</small>
+                                <strong th:text="${showcase.histories.size()}">0</strong>
+                            </div>
+                            <div>
+                                <small>Reviews</small>
+                                <strong th:text="${showcase.reviews.size()}">0</strong>
                             </div>
                         </div>
+                        <div class="stack stack--chips">
+                            <span class="chip" th:each="service, iter : ${showcase.services}" th:if="${iter.index < 3}" th:text="${service.name}">Servicio</span>
+                            <span class="chip" th:if="${#lists.isEmpty(showcase.services)}">Servicios en definición</span>
+                        </div>
                         <div class="badges">
-                            <span class="badge" th:each="area : ${pro.coverageAreas}" th:text="${area.name}">Zona</span>
-                            <span class="badge" th:if="${#lists.isEmpty(pro.coverageAreas)}">Sin cobertura declarada</span>
+                            <span class="badge" th:each="area : ${showcase.professional.coverageAreas}" th:text="${area.name}">Zona</span>
+                            <span class="badge" th:if="${#lists.isEmpty(showcase.professional.coverageAreas)}">Sin cobertura declarada</span>
+                        </div>
+                        <div class="timeline" th:if="${!#lists.isEmpty(showcase.highlightHistories)}">
+                            <p class="eyebrow">Historial reciente</p>
+                            <div class="timeline__row" th:each="history : ${showcase.highlightHistories}">
+                                <div>
+                                    <strong th:text="${history.service.name}">Servicio</strong>
+                                    <small th:text="${#temporals.format(history.dateTime, 'dd MMM HH:mm')}" class="muted">Fecha</small>
+                                </div>
+                                <div>
+                                    <small class="muted" th:text="${history.client.name}">Cliente</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="quote-grid" th:if="${!#lists.isEmpty(showcase.featuredReviews)}">
+                            <figure class="quote" th:each="review : ${showcase.featuredReviews}">
+                                <blockquote th:text="${review.text}">Comentario</blockquote>
+                                <figcaption>
+                                    <span>★ <strong th:text="${review.rating.value}">5</strong></span>
+                                    <span th:text="${review.client.name}">Cliente</span>
+                                </figcaption>
+                            </figure>
                         </div>
                     </div>
                 </article>
-                <p class="empty" th:if="${#lists.isEmpty(professionals)}">Crea tu primera profesional para mostrarla aquí.</p>
+                <p class="empty" th:if="${#lists.isEmpty(showcases)}">Crea tu primera profesional para mostrarla aquí.</p>
             </div>
         </section>
     </main>
