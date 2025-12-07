@@ -11,6 +11,7 @@ import application.booking.validation.CoverageValidationHandler;
 import application.booking.validation.PaymentValidationHandler;
 import application.facade.BeautyAtHomeFacade;
 import domain.booking.AgendaSingleton;
+import domain.booking.command.CommandInvoker;
 import domain.pricing.PricingStrategy;
 import domain.pricing.StandardPricingStrategy;
 import domain.professional.factory.ConcreteProfessionalFactory;
@@ -68,6 +69,11 @@ public class AppConfig {
     }
 
     @Bean
+    public CommandInvoker commandInvoker() {
+        return new CommandInvoker();
+    }
+
+    @Bean
     public CoverageValidationHandler coverageValidationHandler(ProfessionalDAO professionalDAO) {
         return new CoverageValidationHandler(professionalDAO);
     }
@@ -98,8 +104,9 @@ public class AppConfig {
 
     @Bean
     public BookingService bookingService(BookingRequestHandler bookingValidationChain,
-                                         AgendaSingleton agendaSingleton) {
-        return new BookingService(bookingValidationChain, agendaSingleton);
+                                         AgendaSingleton agendaSingleton,
+                                         CommandInvoker commandInvoker) {
+        return new BookingService(bookingValidationChain, agendaSingleton, commandInvoker);
     }
 
     @Bean
@@ -161,7 +168,9 @@ public class AppConfig {
                                                  ProfessionalAbstractFactory professionalFactory,
                                                  ServiceDirector serviceDirector,
                                                  ReviewGuardProxy reviewGuardProxy,
-                                                 ConsentProxy consentProxy) {
+                                                 ConsentProxy consentProxy,
+                                                 CommandInvoker commandInvoker,
+                                                 AgendaSingleton agendaSingleton) {
         return new BeautyAtHomeFacade(clientDAO,
                 professionalDAO,
                 serviceDAO,
@@ -172,6 +181,8 @@ public class AppConfig {
                 professionalFactory,
                 serviceDirector,
                 reviewGuardProxy,
-                consentProxy);
+                consentProxy,
+                commandInvoker,
+                agendaSingleton);
     }
 }

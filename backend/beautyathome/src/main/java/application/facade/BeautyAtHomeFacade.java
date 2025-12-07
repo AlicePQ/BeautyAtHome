@@ -12,7 +12,10 @@ import java.util.stream.Collectors;
 
 import application.booking.BookingRequest;
 import application.booking.BookingService;
+import domain.booking.AgendaSingleton;
 import domain.booking.Booking;
+import domain.booking.command.CancelBookingCommand;
+import domain.booking.command.CommandInvoker;
 import domain.booking.history.ServiceHistory;
 import domain.booking.observer.ClientNotificationObserver;
 import domain.booking.observer.ProfessionalNotificationObserver;
@@ -51,6 +54,8 @@ public class BeautyAtHomeFacade {
     private final ServiceDirector serviceDirector;
     private final ReviewGuardProxy reviewGuardProxy;
     private final ConsentProxy consentProxy;
+    private final CommandInvoker commandInvoker;
+    private final AgendaSingleton agendaSingleton;
 
     /**
      * Ensambla la fachada con todas sus dependencias colaboradoras.
@@ -66,6 +71,8 @@ public class BeautyAtHomeFacade {
      * @param serviceDirector director para construir servicios básicos
      * @param reviewGuardProxy proxy que evita reseñas duplicadas
      * @param consentProxy proxy encargado de fotos y consentimientos
+    * @param commandInvoker invocador que ejecuta los comandos de agenda
+    * @param agendaSingleton agenda compartida que actúa como receptor
      */
     public BeautyAtHomeFacade(ClientDAO clientDAO,
                               ProfessionalDAO professionalDAO,
@@ -77,7 +84,9 @@ public class BeautyAtHomeFacade {
                               ProfessionalAbstractFactory professionalFactory,
                               ServiceDirector serviceDirector,
                               ReviewGuardProxy reviewGuardProxy,
-                              ConsentProxy consentProxy) {
+                              ConsentProxy consentProxy,
+                              CommandInvoker commandInvoker,
+                              AgendaSingleton agendaSingleton) {
         this.clientDAO = clientDAO;
         this.professionalDAO = professionalDAO;
         this.serviceDAO = serviceDAO;
@@ -89,6 +98,8 @@ public class BeautyAtHomeFacade {
         this.serviceDirector = serviceDirector;
         this.reviewGuardProxy = reviewGuardProxy;
         this.consentProxy = consentProxy;
+        this.commandInvoker = commandInvoker;
+        this.agendaSingleton = agendaSingleton;
     }
 
     /**
@@ -252,6 +263,21 @@ public class BeautyAtHomeFacade {
         Booking persisted = bookingDAO.save(booking);
         // El cálculo de precios se mantiene para integraciones futuras (facturación, etc.)
         return persisted;
+    }
+
+    /**
+     * Cancela una reserva existente empleando el patrón Command.
+     *
+     * @param bookingId identificador de la reserva a cancelar
+     */
+    public void cancelBooking(String bookingId) {
+        CancelBookingCommand command = new CancelBookingCommand(agendaSingleton, bookingId);
+        commandInvoker.setCommand(command);
+        commandInvoker.executeCommand();
+        if (!command.isCancelled()) {
+            throw new IllegalArgumentException("Booking not found: " + bookingId);
+        }
+        bookingDAO.delete(bookingId);
     }
 
     /**

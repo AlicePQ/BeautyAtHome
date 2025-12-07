@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profesionales</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}" href="/css/app.css" />
+</head>
+<body>
+<header>
+    <h1>Profesionales</h1>
+    <nav>
+        <a th:href="@{/home}">Inicio</a>
+        <a th:href="@{/clients}">Clientes</a>
+        <a th:href="@{/bookings}">Reservas</a>
+        <a th:href="@{/reviews}">Reseñas</a>
+    </nav>
+</header>
+<main>
+    <section>
+        <h2>Registrar profesional</h2>
+        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <form th:action="@{/professionals}" th:object="${professionalForm}" method="post">
+            <input type="text" th:field="*{id}" placeholder="ID" required />
+            <input type="text" th:field="*{type}" placeholder="Tipo (hairstylist, makeupartist, ...)" required />
+            <input type="text" th:field="*{name}" placeholder="Nombre" required />
+            <input type="url" th:field="*{photoUrl}" placeholder="URL de foto" />
+            <textarea th:field="*{experienceSummary}" placeholder="Resumen de experiencia"></textarea>
+            <input type="text" th:field="*{coverageAreas}" placeholder="Coberturas (coma separadas)" />
+            <input type="text" th:field="*{brandName}" placeholder="Marca" />
+            <input type="text" th:field="*{brandLogo}" placeholder="Logo" />
+            <button type="submit">Guardar</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Listado</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Marca</th>
+                <th>Zonas</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="pro : ${professionals}">
+                <td th:text="${pro.name}">Nombre</td>
+                <td th:text="${pro.class.simpleName}">Tipo</td>
+                <td th:text="${pro.brand != null ? pro.brand.name : 'N/A'}">Marca</td>
+                <td>
+                    <span th:if="${#lists.isEmpty(pro.coverageAreas)}">N/A</span>
+                    <span th:each="area, iterStat : ${pro.coverageAreas}">
+                        <span th:text="${area.name}">Zona</span><span th:if="${!iterStat.last}">, </span>
+                    </span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>

@@ -1,5 +1,6 @@
 package infrastructure.persistence.dao.memory;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -53,5 +54,11 @@ public class InMemoryReviewDAO implements ReviewDAO {
                 .filter(review -> review.getProfessional() != null)
                 .filter(review -> professionalId.equals(review.getProfessional().getId()))
                 .collect(Collectors.toList());
+    }
+
+    /** {@inherit} */
+    @Override
+    public List<Review> findAll() {
+        return Collections.unmodifiableList(new ArrayList<>(store.values()));
     }
 }

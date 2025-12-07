@@ -19,4 +19,11 @@ public interface BookingDAO extends BaseDAO<Booking, String> {
 	default List<Booking> findByProfessionalId(String professionalId) {
 		return Collections.emptyList();
 	}
+
+	/**
+	 * Lista todas las reservas registradas.
+	 */
+	default List<Booking> findAll() {
+		return Collections.emptyList();
+	}
 }

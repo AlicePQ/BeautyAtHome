@@ -1,14 +1,16 @@
 package api.controller;
 
 
-import java.time.LocalDateTime;
+import java.util.Objects;
 
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import application.booking.BookingRequest;
 import application.facade.BeautyAtHomeFacade;
 import domain.booking.Booking;
 
@@ -23,13 +25,19 @@ public class BookingController {
     }
 
     @PostMapping
-    public Booking createBooking(@RequestParam String clientId,
-                                 @RequestParam String professionalId,
-                                 @RequestParam String serviceId,
-                                 @RequestParam(required = false) String zone,
-                                 @RequestParam
-                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                 LocalDateTime dateTime) {
-        return facade.bookService(clientId, professionalId, serviceId, dateTime, zone);
+    public Booking createBooking(@RequestBody BookingRequest request) {
+        Objects.requireNonNull(request, "request");
+        return facade.bookService(
+                request.getClientId(),
+                request.getProfessionalId(),
+                request.getServiceId(),
+                request.getDateTime(),
+                request.getZone()
+        );
+    }
+
+    @DeleteMapping("/{bookingId}")
+    public void cancelBooking(@PathVariable String bookingId) {
+        facade.cancelBooking(bookingId);
     }
 }

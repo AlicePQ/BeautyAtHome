@@ -64,4 +64,12 @@ public class InMemoryBookingDAO implements BookingDAO {
                 .sorted(Comparator.comparing(Booking::getDateTime, Comparator.nullsLast(Comparator.naturalOrder())))
                 .collect(Collectors.toList());
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<Booking> findAll() {
+        return store.values().stream()
+                .sorted(Comparator.comparing(Booking::getDateTime, Comparator.nullsLast(Comparator.naturalOrder())))
+                .collect(Collectors.toList());
+    }
 }

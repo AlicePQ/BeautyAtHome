@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Clientes</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}" href="/css/app.css" />
+</head>
+<body>
+<header>
+    <h1>Clientes</h1>
+    <nav>
+        <a th:href="@{/home}">Inicio</a>
+        <a th:href="@{/professionals}">Profesionales</a>
+        <a th:href="@{/bookings}">Reservas</a>
+        <a th:href="@{/reviews}">Reseñas</a>
+    </nav>
+</header>
+<main>
+    <section>
+        <h2>Registrar cliente</h2>
+        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <form th:action="@{/clients}" th:object="${clientForm}" method="post">
+            <input type="text" th:field="*{id}" placeholder="ID (opcional)" />
+            <input type="text" th:field="*{name}" placeholder="Nombre" required />
+            <input type="email" th:field="*{email}" placeholder="Correo" required />
+            <button type="submit">Guardar</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Clientes registrados</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="client : ${clients}">
+                <td th:text="${client.id}">ID</td>
+                <td th:text="${client.name}">Nombre</td>
+                <td th:text="${client.email}">Correo</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>

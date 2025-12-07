@@ -1,5 +1,8 @@
 package infrastructure.persistence.dao.memory;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,5 +45,11 @@ public class InMemoryClientDAO implements ClientDAO {
         if (id != null) {
             store.remove(id);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<Client> findAll() {
+        return Collections.unmodifiableList(new ArrayList<>(store.values()));
     }
 }

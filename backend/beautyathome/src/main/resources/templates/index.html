@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>BeautyAtHome - Panel</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}" href="/css/app.css" />
+</head>
+<body>
+<header>
+    <h1>BeautyAtHome</h1>
+    <nav>
+        <a th:href="@{/home}">Inicio</a>
+        <a th:href="@{/clients}">Clientes</a>
+        <a th:href="@{/professionals}">Profesionales</a>
+        <a th:href="@{/bookings}">Reservas</a>
+        <a th:href="@{/reviews}">Reseñas</a>
+    </nav>
+</header>
+<main>
+    <section>
+        <h2>Resumen</h2>
+        <div class="stats">
+            <p><strong>Clientes:</strong> <span th:text="${clientCount}">0</span></p>
+            <p><strong>Profesionales:</strong> <span th:text="${professionalCount}">0</span></p>
+            <p><strong>Reservas:</strong> <span th:text="${bookingCount}">0</span></p>
+        </div>
+        <p>Usa la barra superior para acceder a los módulos del sistema MVC.</p>
+    </section>
+</main>
+</body>
+</html>

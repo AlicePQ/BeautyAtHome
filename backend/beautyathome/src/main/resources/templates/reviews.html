@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reseñas</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}" href="/css/app.css" />
+</head>
+<body>
+<header>
+    <h1>Reseñas</h1>
+    <nav>
+        <a th:href="@{/home}">Inicio</a>
+        <a th:href="@{/clients}">Clientes</a>
+        <a th:href="@{/professionals}">Profesionales</a>
+        <a th:href="@{/bookings}">Reservas</a>
+    </nav>
+</header>
+<main>
+    <section>
+        <h2>Nueva reseña</h2>
+        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <form th:action="@{/reviews}" th:object="${reviewForm}" method="post">
+            <input type="text" th:field="*{bookingId}" placeholder="ID reserva" required />
+            <input type="number" min="1" max="5" th:field="*{rating}" placeholder="Calificación" required />
+            <textarea th:field="*{text}" placeholder="Comentario"></textarea>
+            <button type="submit">Publicar</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Listado</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Reserva</th>
+                <th>Profesional</th>
+                <th>Cliente</th>
+                <th>Calificación</th>
+                <th>Comentario</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="review : ${reviews}">
+                <td th:text="${review.booking != null ? review.booking.id : 'N/A'}">Reserva</td>
+                <td th:text="${review.professional != null ? review.professional.name : 'N/A'}">Profesional</td>
+                <td th:text="${review.client != null ? review.client.name : 'N/A'}">Cliente</td>
+                <td th:text="${review.rating.value}">5</td>
+                <td th:text="${review.text}">Comentario</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>
