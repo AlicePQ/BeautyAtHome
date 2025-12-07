@@ -93,9 +93,10 @@ public class ProfessionalViewController {
             data.put("coverage", form.coverageAsList());
             data.put("services", Collections.emptyList());
             if (form.getBrandName() != null && !form.getBrandName().isBlank()) {
-                Map<String, String> brand = new HashMap<>();
+                Map<String, Object> brand = new HashMap<>();
                 brand.put("name", form.getBrandName());
                 brand.put("logo", form.getBrandLogo());
+                brand.put("products", form.brandProductsAsList());
                 data.put("brand", brand);
             }
             facade.registerProfessional(data);

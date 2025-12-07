@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import domain.professional.Brand;
 import domain.professional.CoverageArea;
@@ -46,11 +47,20 @@ public class ConcreteProfessionalFactory implements ProfessionalAbstractFactory 
 		String experience = (String) data.getOrDefault("experienceSummary", "");
 		List<String> coverageNames = (List<String>) data.getOrDefault("coverage", Collections.emptyList());
 		List<ServiceComponent> services = (List<ServiceComponent>) data.getOrDefault("services", Collections.emptyList());
-		Map<String, String> brandData = (Map<String, String>) data.get("brand");
-		Brand brand = brandData == null ? null : new Brand(
-				brandData.getOrDefault("name", ""),
-				brandData.getOrDefault("logo", "")
-		);
+		Map<String, Object> brandData = (Map<String, Object>) data.get("brand");
+		Brand brand = null;
+		if (brandData != null) {
+			String brandName = (String) brandData.getOrDefault("name", "");
+			String brandLogo = (String) brandData.getOrDefault("logo", "");
+			List<String> heroProducts = Collections.emptyList();
+			Object rawProducts = brandData.get("products");
+			if (rawProducts instanceof List<?> list) {
+				heroProducts = list.stream()
+					.map(Object::toString)
+					.collect(Collectors.toList());
+			}
+			brand = new Brand(brandName, brandLogo, heroProducts);
+		}
 
 		builder.setId(id)
 				.setName(name)

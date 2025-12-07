@@ -83,24 +83,30 @@ public class SampleDataInitializer implements CommandLineRunner {
 
     private List<Professional> seedProfessionals() {
         return List.of(
-                registerProfessional("pro-001", "hairstylist", "Diana Styling",
-                        List.of("Chapinero", "Usaquén", "Rosales"), "LuxHair", "https://picsum.photos/seed/luxhairlogo/120/120",
-                        "Colorista master especializada en rubios lived-in", "diana"),
-                registerProfessional("pro-002", "makeupartist", "Aura Makeup",
-                        List.of("Suba", "Engativá", "Cedritos"), "GlamPro", "https://picsum.photos/seed/glampro/120/120",
-                        "Makeup artist certificada por academias internacionales", "aura"),
-                registerProfessional("pro-003", "manicurist", "Nails by Sofi",
-                        List.of("Chapinero", "Teusaquillo"), null, null,
-                        "Manicurista especializada en nail art minimalista y k-beauty", "sofi"),
-                registerProfessional("pro-004", "hairstylist", "Barber Max",
-                        List.of("Kennedy", "Bosa", "Fontibón"), "UrbanCut", "https://picsum.photos/seed/urbancut/120/120",
-                        "Barbero de precisión con enfoque editorial", "max"),
-                registerProfessional("pro-005", "makeupartist", "Luna Glam",
-                        List.of("Fontibón", "Engativá", "Modelia"), "BellezaTotal", "https://picsum.photos/seed/belleza/120/120",
-                        "Experta en maquillaje luminoso para eventos de noche", "luna"),
-                registerProfessional("pro-006", "manicurist", "Studio Lila",
-                        List.of("Chía", "Cajicá", "Usaquén"), "PureHands", "https://picsum.photos/seed/purehands/120/120",
-                        "Spa móvil vegano para manos y pies", "lila")
+            registerProfessional("pro-001", "hairstylist", "Diana Styling",
+                List.of("Chapinero", "Usaquén", "Rosales"), "LuxHair", "https://picsum.photos/seed/luxhairlogo/120/120",
+                List.of("Kérastase Blond Absolu", "Dyson Corrale Platinum"),
+                "Colorista master especializada en rubios lived-in", "diana"),
+            registerProfessional("pro-002", "makeupartist", "Aura Makeup",
+                List.of("Suba", "Engativá", "Cedritos"), "GlamPro", "https://picsum.photos/seed/glampro/120/120",
+                List.of("Charlotte Tilbury Flawless Filter", "Dior Backstage Airflash"),
+                "Makeup artist certificada por academias internacionales", "aura"),
+            registerProfessional("pro-003", "manicurist", "Nails by Sofi",
+                List.of("Chapinero", "Teusaquillo"), null, null,
+                List.of(),
+                "Manicurista especializada en nail art minimalista y k-beauty", "sofi"),
+            registerProfessional("pro-004", "hairstylist", "Barber Max",
+                List.of("Kennedy", "Bosa", "Fontibón"), "UrbanCut", "https://picsum.photos/seed/urbancut/120/120",
+                List.of("American Crew Fiber", "GHD Oracle Styler"),
+                "Barbero de precisión con enfoque editorial", "max"),
+            registerProfessional("pro-005", "makeupartist", "Luna Glam",
+                List.of("Fontibón", "Engativá", "Modelia"), "BellezaTotal", "https://picsum.photos/seed/belleza/120/120",
+                List.of("NARS Light Reflecting", "Fenty Gloss Bomb Heat"),
+                "Experta en maquillaje luminoso para eventos de noche", "luna"),
+            registerProfessional("pro-006", "manicurist", "Studio Lila",
+                List.of("Chía", "Cajicá", "Usaquén"), "PureHands", "https://picsum.photos/seed/purehands/120/120",
+                List.of("OPI GelColor Bio Shield", "Herbivore Coconut Milk Bath"),
+                "Spa móvil vegano para manos y pies", "lila")
         );
     }
 
@@ -110,6 +116,7 @@ public class SampleDataInitializer implements CommandLineRunner {
                                               List<String> coverage,
                                               String brandName,
                                               String brandLogo,
+                                              List<String> brandProducts,
                                               String experience,
                                               String photoSeed) {
         Map<String, Object> data = new HashMap<>();
@@ -120,9 +127,10 @@ public class SampleDataInitializer implements CommandLineRunner {
         data.put("experienceSummary", experience);
         data.put("coverage", coverage);
         if (brandName != null) {
-            Map<String, String> brand = new HashMap<>();
+            Map<String, Object> brand = new HashMap<>();
             brand.put("name", brandName);
             brand.put("logo", brandLogo);
+            brand.put("products", brandProducts == null ? List.of() : brandProducts);
             data.put("brand", brand);
         }
         data.put("services", List.of());

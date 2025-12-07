@@ -17,6 +17,7 @@ public class ProfessionalForm {
     private String coverageAreas; // comma separated
     private String brandName;
     private String brandLogo;
+    private String brandProducts;
 
     public String getId() {
         return id;
@@ -82,6 +83,14 @@ public class ProfessionalForm {
         this.brandLogo = brandLogo;
     }
 
+    public String getBrandProducts() {
+        return brandProducts;
+    }
+
+    public void setBrandProducts(String brandProducts) {
+        this.brandProducts = brandProducts;
+    }
+
     /**
      * @return coverage areas split by comma and trimmed
      */
@@ -90,6 +99,19 @@ public class ProfessionalForm {
             return List.of();
         }
         return Arrays.stream(coverageAreas.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * @return lista de productos patrocinados separados por coma.
+     */
+    public List<String> brandProductsAsList() {
+        if (brandProducts == null || brandProducts.isBlank()) {
+            return List.of();
+        }
+        return Arrays.stream(brandProducts.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .collect(Collectors.toList());

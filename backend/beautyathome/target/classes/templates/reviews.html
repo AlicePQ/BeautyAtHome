@@ -60,19 +60,25 @@
                 <span th:text="${#lists.size(reviews)} + ' opiniones'">0 opiniones</span>
             </div>
             <div class="card-grid three">
-                <article class="review-card" th:each="review : ${reviews}">
+                <article class="review-card" th:each="reviewCard : ${reviewCards}">
+                    <div class="review-card__media" th:if="${reviewCard.coverPhoto != null}">
+                        <img th:src="${reviewCard.coverPhoto}" alt="Resultado reseña" />
+                    </div>
+                    <div class="review-card__gallery" th:if="${!#lists.isEmpty(reviewCard.supportingPhotos)}">
+                        <img th:each="photo : ${reviewCard.supportingPhotos}" th:src="${photo}" alt="Detalle reseña" />
+                    </div>
                     <div class="review-card__head">
-                        <div class="stars" th:with="rating=${review.rating.value}">
+                        <div class="stars" th:with="rating=${reviewCard.review.rating.value}">
                             <span th:each="star : ${#numbers.sequence(1,5)}"
                                   th:classappend="${star <= rating} ? 'star--active' : ''">★</span>
                         </div>
-                        <span class="chip ghost" th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy')}">07 Dic</span>
+                        <span class="chip ghost" th:text="${#temporals.format(reviewCard.review.createdAt, 'dd MMM yyyy')}">07 Dic</span>
                     </div>
-                    <p class="review-card__text" th:text="${review.text}">Comentario</p>
+                    <p class="review-card__text" th:text="${reviewCard.review.text}">Comentario</p>
                     <div class="review-card__meta">
-                        <strong th:text="${review.client != null ? review.client.name : 'Cliente'}">Cliente</strong>
-                        <span th:text="${review.professional != null ? review.professional.name : 'Profesional'}">Profesional</span>
-                        <small th:text="${review.booking != null ? review.booking.id : 'N/A'}">booking-id</small>
+                        <strong th:text="${reviewCard.review.client != null ? reviewCard.review.client.name : 'Cliente'}">Cliente</strong>
+                        <span th:text="${reviewCard.review.professional != null ? reviewCard.review.professional.name : 'Profesional'}">Profesional</span>
+                        <small th:text="${reviewCard.review.booking != null ? reviewCard.review.booking.id : 'N/A'}">booking-id</small>
                     </div>
                 </article>
                 <p class="empty" th:if="${#lists.isEmpty(reviews)}">Aún no hay reseñas registradas.</p>

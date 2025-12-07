@@ -76,6 +76,7 @@
                 <label>Coberturas<input type="text" th:field="*{coverageAreas}" placeholder="Chapinero, Usaquén" /></label>
                 <label>Marca<input type="text" th:field="*{brandName}" placeholder="Nombre marca" /></label>
                 <label>Logo<input type="text" th:field="*{brandLogo}" placeholder="https://" /></label>
+                <label class="grid-span">Productos patrocinados<input type="text" th:field="*{brandProducts}" placeholder="Producto 1, Producto 2" /></label>
                 <button type="submit" class="btn primary">Guardar profesional</button>
             </form>
         </section>
@@ -107,6 +108,12 @@
                     <div class="stack stack--chips">
                         <span class="chip" th:each="service, iterStat : ${spotlight.services}" th:if="${iterStat.index < 3}" th:text="${service.name}">Servicio</span>
                         <span class="chip" th:if="${#lists.isEmpty(spotlight.services)}">Publicación en curso</span>
+                    </div>
+                    <div class="product-stack" th:if="${spotlight.professional.brand != null and !#lists.isEmpty(spotlight.professional.brand.heroProducts)}">
+                        <small class="muted">Solo productos exclusivos</small>
+                        <div class="stack stack--chips">
+                            <span class="chip ghost" th:each="product : ${spotlight.professional.brand.heroProducts}" th:text="${product}">Producto</span>
+                        </div>
                     </div>
                 </article>
             </div>
@@ -152,24 +159,55 @@
                             <span class="badge" th:each="area : ${showcase.professional.coverageAreas}" th:text="${area.name}">Zona</span>
                             <span class="badge" th:if="${#lists.isEmpty(showcase.professional.coverageAreas)}">Sin cobertura declarada</span>
                         </div>
-                        <div class="timeline" th:if="${!#lists.isEmpty(showcase.highlightHistories)}">
-                            <p class="eyebrow">Historial reciente</p>
-                            <div class="timeline__row" th:each="history : ${showcase.highlightHistories}">
-                                <div>
-                                    <strong th:text="${history.service.name}">Servicio</strong>
-                                    <small th:text="${#temporals.format(history.dateTime, 'dd MMM HH:mm')}" class="muted">Fecha</small>
-                                </div>
-                                <div>
-                                    <small class="muted" th:text="${history.client.name}">Cliente</small>
-                                </div>
+                        <div class="product-stack" th:if="${showcase.professional.brand != null and !#lists.isEmpty(showcase.professional.brand.heroProducts)}">
+                            <small class="muted">Kit certificado</small>
+                            <div class="stack stack--chips">
+                                <span class="chip ghost" th:each="product : ${showcase.professional.brand.heroProducts}" th:text="${product}">Producto</span>
                             </div>
                         </div>
-                        <div class="quote-grid" th:if="${!#lists.isEmpty(showcase.featuredReviews)}">
-                            <figure class="quote" th:each="review : ${showcase.featuredReviews}">
-                                <blockquote th:text="${review.text}">Comentario</blockquote>
+                        <div class="service-catalog" th:if="${!#lists.isEmpty(showcase.serviceCards)}">
+                            <p class="eyebrow">Catálogo signature</p>
+                            <div class="service-grid">
+                                <article class="service-card" th:each="serviceCard : ${showcase.serviceCards}">
+                                    <header>
+                                        <div>
+                                            <h4 th:text="${serviceCard.name}">Servicio</h4>
+                                            <p class="muted" th:text="${serviceCard.description}">Descripción</p>
+                                        </div>
+                                        <div class="service-card__price">
+                                            <strong th:text="${serviceCard.price}">$0 COP</strong>
+                                            <small th:text="${serviceCard.durationLabel}">60 min</small>
+                                        </div>
+                                    </header>
+                                    <div class="service-card__gallery" th:if="${serviceCard.gallery != null}">
+                                        <img th:each="imageUrl, iter : ${serviceCard.gallery}" th:if="${iter.index < 3}" th:src="${imageUrl}" alt="Referencia servicio" />
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                        <div class="history-grid" th:if="${!#lists.isEmpty(showcase.serviceSpotlights)}">
+                            <p class="eyebrow">Servicios entregados</p>
+                            <article class="history-card" th:each="story : ${showcase.serviceSpotlights}">
+                                <div class="history-card__info">
+                                    <strong th:text="${story.serviceName}">Servicio</strong>
+                                    <small class="muted" th:text="${#temporals.format(story.date, 'dd MMM yyyy HH:mm')}">Fecha</small>
+                                    <span class="badge" th:text="${story.clientName}">Cliente</span>
+                                </div>
+                                <div class="history-card__gallery">
+                                    <img th:each="photo, iter : ${story.photoUrls}" th:if="${iter.index < 3}" th:src="${photo}" alt="Resultado" />
+                                    <span class="gallery-placeholder" th:if="${#lists.isEmpty(story.photoUrls)}">Sin fotos públicas</span>
+                                </div>
+                            </article>
+                        </div>
+                        <div class="quote-grid" th:if="${!#lists.isEmpty(showcase.reviewSpotlights)}">
+                            <figure class="quote" th:each="reviewSpot : ${showcase.reviewSpotlights}">
+                                <div class="quote__media" th:if="${reviewSpot.coverPhotoUrl != null}">
+                                    <img th:src="${reviewSpot.coverPhotoUrl}" alt="Resultado reseña" />
+                                </div>
+                                <blockquote th:text="${reviewSpot.review.text}">Comentario</blockquote>
                                 <figcaption>
-                                    <span>★ <strong th:text="${review.rating.value}">5</strong></span>
-                                    <span th:text="${review.client.name}">Cliente</span>
+                                    <span>★ <strong th:text="${reviewSpot.review.rating.value}">5</strong></span>
+                                    <span th:text="${reviewSpot.review.client.name}">Cliente</span>
                                 </figcaption>
                             </figure>
                         </div>
