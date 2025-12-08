@@ -240,5 +240,9 @@ public class ProfessionalShowcase {
         public String getCoverPhotoUrl() {
             return coverPhotoUrl;
         }
+
+        public String getCoverPhoto() {
+            return coverPhotoUrl;
+        }
     }
 }
