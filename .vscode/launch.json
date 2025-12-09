@@ -6,16 +6,11 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Current File",
-            "request": "launch",
-            "mainClass": "${file}"
-        },
-        {
-            "type": "java",
             "name": "BeautyAtHomeApplication",
             "request": "launch",
             "mainClass": "BeautyAtHomeApplication",
-            "projectName": "beautyathome"
+            "projectName": "beautyathome",
+            "cwd": "${workspaceFolder}/backend/beautyathome"
         }
     ]
 }
