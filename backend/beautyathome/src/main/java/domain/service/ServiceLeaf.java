@@ -11,11 +11,11 @@ import domain.service.visitor.ServiceVisitor;
      */
     public class ServiceLeaf implements ServiceComponent {
 
-        private String name;
-        private String description;
-        private double price;
-        private int durationMin;
-        private List<ImageReference> images;
+        private final String name;
+        private final String description;
+        private final double price;
+        private final int durationMin;
+        private final List<ImageReference> images;
         private Category category;
 
         /**

@@ -72,6 +72,12 @@ public class InMemoryServiceDAO implements ServiceDAO {
         return Collections.unmodifiableList(new ArrayList<>(servicesForProfessional));
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public List<ServiceComponent> findAll() {
+        return Collections.unmodifiableList(new ArrayList<>(services.values()));
+    }
+
     /**
      * Normaliza las claves para mantener consistencia en los mapas.
      */

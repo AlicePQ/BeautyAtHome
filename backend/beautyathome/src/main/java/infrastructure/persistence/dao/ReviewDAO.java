@@ -19,4 +19,11 @@ public interface ReviewDAO extends BaseDAO<Review, String> {
 	default List<Review> findByProfessionalId(String professionalId) {
 		return Collections.emptyList();
 	}
+
+	/**
+	 * Lista todas las reseñas almacenadas.
+	 */
+	default List<Review> findAll() {
+		return Collections.emptyList();
+	}
 }

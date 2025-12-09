@@ -6,7 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 		"application",
 		"config",
 		"domain",
-		"infrastructure"
+		"infrastructure",
+		"ui"
 })
 public class BeautyAtHomeApplication {
 

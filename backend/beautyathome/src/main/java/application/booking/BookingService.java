@@ -4,6 +4,8 @@ import application.booking.validation.BookingRequestHandler;
 import domain.booking.AgendaSingleton;
 import domain.booking.Booking;
 import domain.booking.BookingBuilder;
+import domain.booking.command.BookServiceCommand;
+import domain.booking.command.CommandInvoker;
 
 /**
  * Application service that orchestrates validation and booking persistence
@@ -13,14 +15,18 @@ public class BookingService {
 
     private final BookingRequestHandler validationChain;
     private final AgendaSingleton agenda;
+    private final CommandInvoker commandInvoker;
 
     /**
      * @param validationChain head of the validation chain of responsibility
      * @param agenda agenda singleton instance used for persistence
      */
-    public BookingService(BookingRequestHandler validationChain, AgendaSingleton agenda) {
+    public BookingService(BookingRequestHandler validationChain,
+                          AgendaSingleton agenda,
+                          CommandInvoker commandInvoker) {
         this.validationChain = validationChain;
         this.agenda = agenda;
+        this.commandInvoker = commandInvoker;
     }
 
     /**
@@ -34,20 +40,16 @@ public class BookingService {
             throw new IllegalStateException("Booking validation failed");
         }
 
-        Booking draft = new BookingBuilder()
+        BookingBuilder builder = new BookingBuilder()
             .withClient(request.getClientId())
             .withProfessional(request.getProfessionalId())
             .withService(request.getServiceId())
-            .withDate(request.getDateTime())
-            .build();
+            .withDate(request.getDateTime());
 
-        return agenda.book(
-            draft.getId(),
-            draft.getClientId(),
-            draft.getProfessionalId(),
-            draft.getServiceId(),
-            draft.getDateTime()
-        );
+        BookServiceCommand command = new BookServiceCommand(agenda, builder);
+        commandInvoker.setCommand(command);
+        commandInvoker.executeCommand();
+        return command.getResult();
     }
 }
 
