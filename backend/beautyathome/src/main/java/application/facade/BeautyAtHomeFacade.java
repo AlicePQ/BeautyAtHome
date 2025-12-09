@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -362,14 +363,24 @@ public class BeautyAtHomeFacade {
         if (category == null || category.isBlank()) {
             return true;
         }
+        String normalized = category.trim().toLowerCase(Locale.ROOT);
+
+        String typeName = professional.getClass().getSimpleName();
+        if (typeName != null && typeName.toLowerCase(Locale.ROOT).contains(normalized)) {
+            return true;
+        }
+
         if (professional.getServicesOffered() == null) {
             return false;
         }
         return professional.getServicesOffered().stream().anyMatch(service -> {
-            if (service instanceof ServiceLeaf leaf && leaf.getCategory() != null) {
-                return leaf.getCategory().getName().equalsIgnoreCase(category);
+            if (service instanceof ServiceLeaf leaf && leaf.getCategory() != null
+                && leaf.getCategory().getName() != null
+                && leaf.getCategory().getName().toLowerCase(Locale.ROOT).contains(normalized)) {
+                return true;
             }
-            return service.getName().equalsIgnoreCase(category);
+            String serviceName = service.getName();
+            return serviceName != null && serviceName.toLowerCase(Locale.ROOT).contains(normalized);
         });
     }
 

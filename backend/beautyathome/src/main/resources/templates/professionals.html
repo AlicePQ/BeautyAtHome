@@ -77,6 +77,11 @@
                 <label>Marca<input type="text" th:field="*{brandName}" placeholder="Nombre marca" /></label>
                 <label>Logo<input type="text" th:field="*{brandLogo}" placeholder="https://" /></label>
                 <label class="grid-span">Productos patrocinados<input type="text" th:field="*{brandProducts}" placeholder="Producto 1, Producto 2" /></label>
+                <label class="grid-span">Catálogo Signature
+                    <textarea th:field="*{catalogSignature}" rows="4"
+                              placeholder="Glow Ritual | Descripción breve | 220000 | 120 | https://img1, https://img2"></textarea>
+                    <small class="muted">Formato: Nombre | Descripción | Precio | Minutos | URLs opcionales separadas por coma.</small>
+                </label>
                 <button type="submit" class="btn primary">Guardar profesional</button>
             </form>
         </section>

@@ -58,27 +58,43 @@
 
         <section class="glass-panel">
             <div class="section-header">
-                <h2>Línea de tiempo</h2>
-                <span th:text="${#lists.size(bookings)} + ' eventos'">0 eventos</span>
+                <div>
+                    <h2>Tablero de estados</h2>
+                    <p>Visualiza el ciclo completo: pendientes, completadas y canceladas.</p>
+                </div>
+                <span th:text="${#lists.size(bookings)} + ' reservas activas'">0 reservas activas</span>
             </div>
-            <ul class="timeline timeline--solid">
-                <li class="timeline__item" th:each="booking : ${bookings}">
-                    <span class="timeline__time" th:text="${#temporals.format(booking.dateTime, 'dd MMM HH:mm')}">07 Dic 10:00</span>
-                    <div>
-                        <p class="timeline__title" th:text="${booking.serviceId}">Servicio</p>
-                        <p class="timeline__meta">
-                            <span th:text="${booking.clientId}">Cliente</span>
-                            ·
-                            <span th:text="${booking.professionalId}">Profesional</span>
-                        </p>
-                        <small th:text="${booking.id}">booking-id</small>
+            <div class="card-grid three booking-lanes">
+                <article class="booking-lane" th:each="lane : ${bookingLanes}">
+                    <div class="booking-lane__head">
+                        <div>
+                            <p class="eyebrow" th:text="${lane.title}">Pendientes</p>
+                            <p class="muted" th:text="${lane.description}">Descripción</p>
+                        </div>
+                        <span class="badge" th:classappend="' ' + lane.badgeTone" th:text="${lane.cards.size()} + ' en cola'">0 en cola</span>
                     </div>
-                    <span class="chip ghost" th:text="${booking.state.class.simpleName}">Estado</span>
-                </li>
-                <li class="timeline__item empty" th:if="${#lists.isEmpty(bookings)}">
-                    Crea tu primera reserva para ver la magia de la agenda.
-                </li>
-            </ul>
+                    <ul class="timeline">
+                        <li class="timeline__item"
+                            th:classappend="' ' + card.timelineModifier"
+                            th:each="card : ${lane.cards}">
+                            <span class="timeline__time" th:text="${#temporals.format(card.booking.dateTime, 'dd MMM HH:mm')}">07 Dic 10:00</span>
+                            <div>
+                                <p class="timeline__title" th:text="${card.booking.serviceId}">Servicio</p>
+                                <p class="timeline__meta">
+                                    <span th:text="${card.booking.clientId}">Cliente</span>
+                                    ·
+                                    <span th:text="${card.booking.professionalId}">Profesional</span>
+                                </p>
+                                <small th:text="${card.booking.id}">booking-id</small>
+                            </div>
+                            <span class="badge" th:classappend="' ' + card.statusTone" th:text="${card.statusLabel}">Estado</span>
+                        </li>
+                        <li class="timeline__item empty" th:if="${#lists.isEmpty(lane.cards)}" th:text="${lane.emptyLabel}">
+                            Sin actividad
+                        </li>
+                    </ul>
+                </article>
+            </div>
         </section>
     </main>
 </div>

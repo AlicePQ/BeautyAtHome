@@ -65,6 +65,7 @@ public class SampleDataInitializer implements CommandLineRunner {
         List<Professional> professionals = seedProfessionals();
         seedServices(professionals);
         List<Booking> bookings = seedBookings(clients, professionals);
+        diversifyBookingStates(bookings);
         seedReviewsAndPhotos(bookings);
     }
 
@@ -251,6 +252,25 @@ public class SampleDataInitializer implements CommandLineRunner {
 
     private String photoUrl(String seed, String suffix) {
         return "https://picsum.photos/seed/gallery" + seed + suffix + "/820/620";
+    }
+
+    private void diversifyBookingStates(List<Booking> bookings) {
+        for (int i = 0; i < bookings.size(); i++) {
+            Booking booking = bookings.get(i);
+            int pattern = i % 4;
+            if (pattern == 0) {
+                booking.confirm();
+                booking.start();
+                booking.complete();
+            } else if (pattern == 1) {
+                booking.confirm();
+            } else if (pattern == 2) {
+                booking.confirm();
+                booking.start();
+            } else {
+                booking.cancel();
+            }
+        }
     }
 
     private record ServiceSeed(String name, String description, double price, int duration, List<String> imageUrls) { }

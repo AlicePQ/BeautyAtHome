@@ -18,6 +18,7 @@ public class ProfessionalForm {
     private String brandName;
     private String brandLogo;
     private String brandProducts;
+    private String catalogSignature;
 
     public String getId() {
         return id;
@@ -91,6 +92,14 @@ public class ProfessionalForm {
         this.brandProducts = brandProducts;
     }
 
+    public String getCatalogSignature() {
+        return catalogSignature;
+    }
+
+    public void setCatalogSignature(String catalogSignature) {
+        this.catalogSignature = catalogSignature;
+    }
+
     /**
      * @return coverage areas split by comma and trimmed
      */
@@ -116,4 +125,79 @@ public class ProfessionalForm {
                 .filter(s -> !s.isEmpty())
                 .collect(Collectors.toList());
     }
+
+    /**
+     * @return lista de servicios declarados en el catálogo signature.
+     */
+    public List<CatalogEntry> catalogEntries() {
+        if (catalogSignature == null || catalogSignature.isBlank()) {
+            return List.of();
+        }
+        return Arrays.stream(catalogSignature.split("\\r?\\n"))
+                .map(String::trim)
+                .filter(line -> !line.isEmpty())
+                .map(this::parseCatalogLine)
+                .filter(entry -> entry != null)
+                .collect(Collectors.toList());
+    }
+
+    private CatalogEntry parseCatalogLine(String line) {
+        String[] parts = line.split("\\|");
+        if (parts.length < 4) {
+            return null;
+        }
+        String name = parts[0].trim();
+        String description = parts[1].trim();
+        double price = sanitizeDouble(parts[2]);
+        int duration = sanitizeInt(parts[3]);
+        if (name.isEmpty() || description.isEmpty() || price <= 0 || duration <= 0) {
+            return null;
+        }
+        List<String> images = parts.length >= 5
+                ? Arrays.stream(parts[4].split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList())
+                : List.of();
+        return new CatalogEntry(name, description, price, duration, images);
+    }
+
+    private double sanitizeDouble(String raw) {
+        if (raw == null) {
+            return -1;
+        }
+        String normalized = raw.replaceAll("[^0-9.,]", "").replace(',', '.');
+        if (normalized.isBlank()) {
+            return -1;
+        }
+        try {
+            return Double.parseDouble(normalized);
+        } catch (NumberFormatException ex) {
+            return -1;
+        }
+    }
+
+    private int sanitizeInt(String raw) {
+        if (raw == null) {
+            return -1;
+        }
+        String normalized = raw.replaceAll("[^0-9]", "");
+        if (normalized.isBlank()) {
+            return -1;
+        }
+        try {
+            return Integer.parseInt(normalized);
+        } catch (NumberFormatException ex) {
+            return -1;
+        }
+    }
+
+    /**
+     * DTO interno para transportar definiciones de servicios.
+     */
+    public record CatalogEntry(String name,
+                               String description,
+                               double price,
+                               int durationMinutes,
+                               List<String> imageUrls) { }
 }

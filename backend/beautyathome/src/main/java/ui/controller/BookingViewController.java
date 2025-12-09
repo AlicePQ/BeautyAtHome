@@ -2,6 +2,7 @@ package ui.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import application.facade.BeautyAtHomeFacade;
+import domain.booking.Booking;
 import infrastructure.persistence.dao.BookingDAO;
 import ui.viewmodel.BookingForm;
+import ui.viewmodel.BookingLane;
 
 /**
  * MVC controller that renders booking lists and creation forms.
@@ -32,7 +35,9 @@ public class BookingViewController {
 
     @GetMapping
     public String listBookings(Model model) {
-        model.addAttribute("bookings", bookingDAO.findAll());
+        List<Booking> bookings = bookingDAO.findAll();
+        model.addAttribute("bookings", bookings);
+        model.addAttribute("bookingLanes", BookingLane.from(bookings));
         model.addAttribute("bookingForm", new BookingForm());
         return "bookings";
     }

@@ -92,6 +92,7 @@ public class ProfessionalViewController {
             data.put("experienceSummary", form.getExperienceSummary());
             data.put("coverage", form.coverageAsList());
             data.put("services", Collections.emptyList());
+            List<ProfessionalForm.CatalogEntry> catalogEntries = form.catalogEntries();
             if (form.getBrandName() != null && !form.getBrandName().isBlank()) {
                 Map<String, Object> brand = new HashMap<>();
                 brand.put("name", form.getBrandName());
@@ -99,11 +100,34 @@ public class ProfessionalViewController {
                 brand.put("products", form.brandProductsAsList());
                 data.put("brand", brand);
             }
-            facade.registerProfessional(data);
-            redirectAttributes.addFlashAttribute("message", "Profesional registrada correctamente");
+            Professional professional = facade.registerProfessional(data);
+            int created = publishCatalogServices(professional.getId(), catalogEntries);
+            String message = created > 0
+                    ? String.format("Profesional registrada. Catálogo signature con %d servicios", created)
+                    : "Profesional registrada correctamente";
+            redirectAttributes.addFlashAttribute("message", message);
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("error", ex.getMessage());
         }
         return "redirect:/professionals";
+    }
+
+    private int publishCatalogServices(String professionalId, List<ProfessionalForm.CatalogEntry> catalogEntries) {
+        if (catalogEntries == null || catalogEntries.isEmpty()) {
+            return 0;
+        }
+        int created = 0;
+        for (ProfessionalForm.CatalogEntry entry : catalogEntries) {
+            facade.createBasicService(
+                    professionalId,
+                    entry.name(),
+                    entry.description(),
+                    entry.price(),
+                    entry.durationMinutes(),
+                    entry.imageUrls() == null ? List.of() : entry.imageUrls()
+            );
+            created++;
+        }
+        return created;
     }
 }
